@@ -4,7 +4,10 @@ param(
     $Name,
     [Parameter(Mandatory=$true, Position=1)]
     [String]
-    $Location
+    $Location,
+    [Parameter(Mandatory=$false, Position=2)]
+    [String]
+    $VMType = "Standard_D1"
 )
 
 if ( (Get-AzureRMLocation | Where {$_.Location -eq $Location}).count -eq 0 )
@@ -48,7 +51,7 @@ Set-AzureRmVirtualNetwork -VirtualNetwork $VirtualNetwork | Out-Null
 Write-Verbose "Creating Virtual Machine config details";
 Write-Verbose "Prompting for Admin account creds for the new virtual machine";
 $Cred = Get-Credential
-$VM = New-AzureRmVMConfig -VMName LabVM -VMSize Standard_D1
+$VM = New-AzureRmVMConfig -VMName LabVM -VMSize $VMType;
 $VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName "LabVM-$Name" -Credential $Cred -ProvisionVMAgent -EnableAutoUpdate
 $VM = Set-AzureRmVMSourceImage -VM $VM -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2016-Datacenter -Version latest
 $VM = Set-AzureRmVMOSDisk -VM $VM -Name OsDisk -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite
