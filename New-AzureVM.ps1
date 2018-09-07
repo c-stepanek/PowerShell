@@ -29,7 +29,7 @@ $NetworkSG = New-AzureRmNetworkSecurityGroup -ResourceGroupName $ResourceGroup -
 Set-AzureRmVirtualNetworkSubnetConfig -Name vSubnet -VirtualNetwork $VirtualNetwork -NetworkSecurityGroup $NetworkSG -AddressPrefix 192.168.1.0/24
 Set-AzureRmVirtualNetwork -VirtualNetwork $VirtualNetwork
 
-#Create virtual machineGet
+#Create virtual machine
 $Cred = Get-Credential
 $VM = New-AzureRmVMConfig -VMName LabVM -VMSize Standard_D1
 $VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName LabVM -Credential $Cred -ProvisionVMAgent -EnableAutoUpdate
@@ -40,4 +40,4 @@ $VM = Add-AzureRmVMNetworkInterface -VM $VM -Id $NIC.Id
 New-AzureRmVM -ResourceGroupName $ResourceGroup -Location EastUS -VM $VM
 
 #Show Public IP address
-Get-AzureRmPublicIpAddress -ResourceGroupName ResourceGroup | Select-Object IpAddress
+Get-AzureRmPublicIpAddress -ResourceGroupName $ResourceGroup | Select-Object IpAddress
