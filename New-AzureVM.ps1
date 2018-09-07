@@ -7,6 +7,12 @@ param(
     $Location
 )
 
+if ( (Get-AzureRMLocation | Where {$_.Location -eq $Location}).count -eq 0 )
+{
+    Write-Error "AzureRM location $Location not found . You can find a list of valid locations using Get-AzureRMLocation.";
+    return;
+}
+
 #$Name is appended to the ResourceGroup name to make it unique
 #$Location list can be found with the 'Get-AzureRMLocation' cmdlet
 $ResourceGroup =  ($Name + "-VM-ResourceGroup")
