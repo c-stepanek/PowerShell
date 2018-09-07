@@ -5,9 +5,13 @@ param(
     [Parameter(Mandatory=$true, Position=1)]
     [String]
     $Location,
-    [Parameter(Mandatory=$false, Position=2)]
+    [Parameter(Mandatory=$true, Position=2)]
+    [System.Management.Automation.PSCredential]
+    $VMCred,
+    [Parameter(Mandatory=$false, Position=3)]
     [String]
     $VMSize = "Standard_D1"
+
 )
 
 if ( (Get-AzureRMLocation | Where {$_.Location -eq $Location}).count -eq 0 )
@@ -20,6 +24,12 @@ if ( (Get-AzureRmVMSize -Location $Location | Where {$_.Name -match $VMSize}).co
     Write-Error "Could not find a VMSize $VMSize at Location $Location".
     Write-Error "You can find VMSizes using the Get-AzureRmVMSize -Location <location> cmdlet."
     return;
+}
+
+Write-Verbose "Prompting for Admin account creds for the new virtual machine if they haven't been supplied already";
+if ($VMCred -eq $null)
+{
+    $VMCred = Get-Credential;
 }
 
 #$Name is appended to the ResourceGroup name to make it unique
@@ -55,10 +65,9 @@ Set-AzureRmVirtualNetwork -VirtualNetwork $VirtualNetwork | Out-Null
 
 #Create virtual machine
 Write-Verbose "Creating Virtual Machine config details";
-Write-Verbose "Prompting for Admin account creds for the new virtual machine";
-$Cred = Get-Credential
+
 $VM = New-AzureRmVMConfig -VMName LabVM -VMSize $VMSize;
-$VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName "LabVM-$Name" -Credential $Cred -ProvisionVMAgent -EnableAutoUpdate
+$VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName "LabVM-$Name" -Credential $VMCred -ProvisionVMAgent -EnableAutoUpdate
 $VM = Set-AzureRmVMSourceImage -VM $VM -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2016-Datacenter -Version latest
 $VM = Set-AzureRmVMOSDisk -VM $VM -Name OsDisk -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite
 $VM = Add-AzureRmVMNetworkInterface -VM $VM -Id $NIC.Id
