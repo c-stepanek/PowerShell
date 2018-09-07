@@ -40,4 +40,4 @@ $VM = Add-AzureRmVMNetworkInterface -VM $VM -Id $NIC.Id
 New-AzureRmVM -ResourceGroupName $ResourceGroup -Location EastUS -VM $VM
 
 #Show Public IP address
-Get-AzureRmPublicIpAddress -ResourceGroupName ResourceGroup | Select-Object IpAddress
+Get-AzureRmPublicIpAddress -ResourceGroupName $ResourceGroup | Select-Object IpAddress
