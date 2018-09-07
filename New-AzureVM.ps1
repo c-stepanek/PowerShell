@@ -1,12 +1,14 @@
 param(
-    # Name to append to the resource group
     [Parameter(Mandatory=$true, Position=0)]
     [String]
-    $Name
+    $Name,
+    [Parameter(Mandatory=$true, Position=1)]
+    [String]
+    $Location
 )
 
-#Location list can be found with the 'Get-AzureRMLocation' cmdlet
-$Location = 'westus2'
+#$Name is appended to the ResourceGroup name to make it unique
+#$Location list can be found with the 'Get-AzureRMLocation' cmdlet
 $ResourceGroup =  ($Name + "-VM-ResourceGroup")
 
 #Create resource group
