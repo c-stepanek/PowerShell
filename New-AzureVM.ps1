@@ -73,7 +73,7 @@ $VM = Set-AzureRmVMOSDisk -VM $VM -Name OsDisk -DiskSizeInGB 128 -CreateOption F
 $VM = Add-AzureRmVMNetworkInterface -VM $VM -Id $NIC.Id
 
 Write-Verbose "Creating virtual machine $VM.Name in ResourceGroup $ResourceGroup in Location $Location";
-New-AzureRmVM -ResourceGroupName $ResourceGroup -Location $Location -VM $VM
+New-AzureRmVM -ResourceGroupName $ResourceGroup -Location $Location -VM $VM | Out-Null
 Write-Verbose "VM creation successful!"
 
 #Show Public IP address
