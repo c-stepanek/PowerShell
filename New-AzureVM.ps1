@@ -78,5 +78,5 @@ Write-Verbose "VM creation successful!"
 
 #Show Public IP address
 $publicIP = (Get-AzureRmPublicIpAddress -ResourceGroupName $ResourceGroup).IpAddress;
-Write-Output "Virtual machine $VM.VMName in ResourceGroup $ResourceGroup in Location $Location has been created with a Public IP $publicIP."
+Write-Output "Virtual machine $VM.Name in ResourceGroup $ResourceGroup in Location $Location has been created with a Public IP $publicIP."
 Write-Output "You can use the credentials provided earlier in the process to connect to this VM with RDP."
