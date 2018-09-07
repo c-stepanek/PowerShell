@@ -49,12 +49,12 @@ Write-Verbose "Creating Virtual Machine config details";
 Write-Verbose "Prompting for Admin account creds for the new virtual machine";
 $Cred = Get-Credential
 $VM = New-AzureRmVMConfig -VMName LabVM -VMSize Standard_D1
-$VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName LabVM -Credential $Cred -ProvisionVMAgent -EnableAutoUpdate
+$VM = Set-AzureRmVMOperatingSystem -VM $VM -Windows -ComputerName "LabVM-$Name" -Credential $Cred -ProvisionVMAgent -EnableAutoUpdate
 $VM = Set-AzureRmVMSourceImage -VM $VM -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2016-Datacenter -Version latest
 $VM = Set-AzureRmVMOSDisk -VM $VM -Name OsDisk -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite
 $VM = Add-AzureRmVMNetworkInterface -VM $VM -Id $NIC.Id
 
-Write-Verbose "Creating virtual machine $VM.VMName in ResourceGroup $ResourceGroup in Location $Location";
+Write-Verbose "Creating virtual machine $VM.Name in ResourceGroup $ResourceGroup in Location $Location";
 New-AzureRmVM -ResourceGroupName $ResourceGroup -Location $Location -VM $VM
 Write-Verbose "VM creation successful!"
 
