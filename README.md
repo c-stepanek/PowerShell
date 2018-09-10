@@ -38,10 +38,10 @@ Latency is displayed in milliseconds (ms).
 ```powershell
 PS F:\Repo\PowerShell> .\TcpPing.ps1 -HostNameOrIP outlook.office365.com -Port 25 | FT -AutoSize
 ```
-|SourceAddress |RemoteAddress |RemotePort |Connected |Latency |Exception
-|:------------- |:------------- |----------: |---------: |-------: |---------
-|10.131.34.100 |40.97.119.162 |        25    |  True  |4.6481
-|10.131.34.100 |40.97.119.162 |        25    |  True  |4.6751
-|10.131.34.100 |40.97.119.162 |        25    |  True  |4.8726
-|10.131.34.100 |40.97.119.162 |        25    |  True  |4.8324
+| SourceAddress | RemoteAddress | RemotePort | Connected | Latency | Exception |
+| :------------ | :------------ | ---------: | --------: | ------: | --------- |
+| 10.131.34.100 | 40.97.119.162 | 25         | True      | 4.6481  |
+| 10.131.34.100 | 40.97.119.162 | 25         | True      | 4.6751  |
+| 10.131.34.100 | 40.97.119.162 | 25         | True      | 4.8726  |
+| 10.131.34.100 | 40.97.119.162 | 25         | True      | 4.8324  |
 
