@@ -1,3 +1,4 @@
+[CmdletBinding()]
 param(
     #Name for the resource group
     [Parameter(Mandatory=$true, Position=0)]
