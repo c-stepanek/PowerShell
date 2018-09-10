@@ -22,7 +22,7 @@ This a PowerShell variant of running "netsh trace start capture=yes tracefile=%t
 
 
 # TcpPing.ps1
-The script will take an IP address (IPv4 or IPv6) or DNS hostname and attempt to create an IPEndPoint(ip,port) then will 
+The script will take an IP address (IPv4 or IPv6) or DNS hostname, then will 
 test how long it takes to make a TCP socket connection to that IP and port. 
 
 This script produces the following TCP traffic:
