@@ -28,36 +28,45 @@ catch {
     throw
 }
 
-for ($i = 1; $i -le $Attempts; $i++) {                
+for ($i = 0; $i -le $Attempts; $i++) {                
     try {
+        $TimeOut = New-TimeSpan -Seconds 3
         $TCPClient = New-Object System.Net.Sockets.TCPClient($($TargetIPAddress.AddressFamily))                  
         $Connect = $TCPClient.BeginConnect($TargetIPAddress, $Port, $null, $null)
-        $Latency = Measure-Command { $Connect.AsyncWaitHandle.WaitOne(3000, $true) }
-
-        if ($TCPClient.Connected) {
-            $TCPClient.EndConnect($Connect);
-
-            [PsCustomObject][ordered]@{
-                SourceAddress = $SourceAddress.IPAddressToString
-                RemoteAddress = $TargetIPAddress.IPAddressToString
-                RemotePort    = $Port
-                Connected     = $TCPClient.Connected
-                Latency       = $Latency.TotalMilliseconds
-                Exception     = $null
+        $Latency = Measure-Command { $Connect.AsyncWaitHandle.WaitOne($TimeOut, $true) }
+        if ($i -gt 0) {
+            if ($TCPClient.Connected) {
+                $TCPClient.EndConnect($Connect)
+    
+                [PsCustomObject][ordered]@{
+                    SourceAddress = $SourceAddress.IPAddressToString
+                    RemoteAddress = $TargetIPAddress.IPAddressToString
+                    RemotePort    = $Port
+                    Connected     = $TCPClient.Connected
+                    Latency       = $Latency.TotalMilliseconds
+                    Exception     = $null
+                }
+    
+                $TcpClient.Dispose()
             }
-
-            $TcpClient.Dispose()
+            else {
+                $TCPClient.Dispose()
+    
+                [PsCustomObject][ordered]@{
+                    SourceAddress = $SourceAddress.IPAddressToString
+                    RemoteAddress = $TargetIPAddress.IPAddressToString
+                    RemotePort    = $Port
+                    Connected     = $false
+                    Latency       = $null
+                    Exception     = "RequestTimeout"
+                }
+            }
         }
         else {
-            $TCPClient.Dispose()
-
-            [PsCustomObject][ordered]@{
-                SourceAddress = $SourceAddress.IPAddressToString
-                RemoteAddress = $TargetIPAddress.IPAddressToString
-                RemotePort    = $Port
-                Connected     = $false
-                Latency       = $null
-                Exception     = "RequestTimeout"
+            # Disregard first connection as warm-up
+            if ($TCPClient.Connected) {
+                $TCPClient.EndConnect($Connect)
+                $TcpClient.Dispose()
             }
         }
     
