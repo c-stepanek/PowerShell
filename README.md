@@ -27,23 +27,23 @@ test how long it takes to make a TCP socket connection to that IP and port.
 
 This script produces the following TCP traffic:
 
--> [SYN]
-<- [SYN,ACK]
--> [ACK]
--> [FIN,ACK]
-<- [FIN,ACK]
--> [ACK]
+-> [SYN]<br />
+<- [SYN,ACK]<br />
+-> [ACK]<br />
+-> [FIN,ACK]<br />
+<- [FIN,ACK]<br />
+-> [ACK]<br />
 
 Latency is displayed in milliseconds (ms).
 
 PS F:\Repo\PowerShell> .\TcpPing.ps1 -HostNameOrIP outlook.office365.com -Port 25 | FT -AutoSize
 
-SourceAddress RemoteAddress RemotePort Connected Latency Exception
-------------- ------------- ---------- --------- ------- ---------
-10.131.34.100 40.97.119.162         25      True  4.6481
-10.131.34.100 40.97.119.162         25      True  4.6751
-10.131.34.100 40.97.119.162         25      True  4.8726
-10.131.34.100 40.97.119.162         25      True  4.8324
+|SourceAddress |RemoteAddress |RemotePort |Connected |Latency |Exception
+|:------------- |:------------- |----------: |---------: |-------: |---------
+|10.131.34.100 |40.97.119.162 |        25    |  True  |4.6481
+|10.131.34.100 |40.97.119.162 |        25    |  True  |4.6751
+|10.131.34.100 |40.97.119.162 |        25    |  True  |4.8726
+|10.131.34.100 |40.97.119.162 |        25    |  True  |4.8324
 
 
 PS F:\Repo\PowerShell>
