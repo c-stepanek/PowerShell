@@ -1,35 +1,61 @@
 param(
+    #Name for the resource group
     [Parameter(Mandatory=$true, Position=0)]
     [String]
     $Name,
-    [Parameter(Mandatory=$true, Position=1)]
+    
+    #Virutal machine location list
+    [Parameter(Mandatory=$false, Position=1)]
+    [ValidateSet("australiaeast","australiasoutheast","brazilsouth",
+        "canadacentral","canadaeast","centralindia","centralus",
+        "eastasia","eastus","eastus2","francecentral","japaneast",
+        "japanwest","koreacentral","koreasouth","northcentralus",
+        "northeurope","southcentralus","southeastasia","southindia",
+        "uksouth","ukwest","westcentralus","westeurope","westindia",
+        "westus","westus2")]
     [String]
-    $Location,
+    $Location = "westus",
+
+    #Virtual machine credentials
     [Parameter(Mandatory=$true, Position=2)]
+    [ValidateNotNullOrEmpty()]
     [System.Management.Automation.PSCredential]
     $VMCred,
+
+    #Virtual machine size:
+    #Some sizes are not available in all locations
     [Parameter(Mandatory=$false, Position=3)]
     [String]
     $VMSize = "Standard_D1"
 
 )
 
+if (Get-Module -ListAvailable -Name AzureRM)
+{
+    Import-Module -Name AzureRM
+}
+else 
+{
+    Write-Warning "The AzureRM module was not found. Attempting to install the AzureRM module."
+    if (-not [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).Groups -match "S-1-5-32-544"))
+    {
+        throw "You must run this as Administrator to install the AzureRM module."
+    }
+    else
+    {
+        #We will assume you are running at least PowerShell Version 5.0
+        #and/or alread have PowerShellGet installed.
+        Install-Module -Name AzureRM -Force
+    }
+}
+
 if ( (Get-AzureRMLocation | Where {$_.Location -eq $Location}).count -eq 0 )
 {
-    Write-Error "AzureRM location $Location not found. You can find a list of valid locations using Get-AzureRMLocation.";
-    return;
+    throw "AzureRM location $Location not found. You can find a list of valid locations using Get-AzureRMLocation.";
 }
 if ( (Get-AzureRmVMSize -Location $Location | Where {$_.Name -match $VMSize}).count -eq 0 )
 {
-    Write-Error "Could not find a VMSize $VMSize at Location $Location".
-    Write-Error "You can find VMSizes using the Get-AzureRmVMSize -Location <location> cmdlet."
-    return;
-}
-
-Write-Verbose "Prompting for Admin account creds for the new virtual machine if they haven't been supplied already";
-if ($VMCred -eq $null)
-{
-    $VMCred = Get-Credential;
+    throw "Could not find a VMSize $VMSize at Location $Location. You can find VMSizes using the Get-AzureRmVMSize -Location <location> cmdlet."
 }
 
 #$Name is appended to the ResourceGroup name to make it unique
