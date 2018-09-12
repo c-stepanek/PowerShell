@@ -30,7 +30,7 @@ param(
     $VMSize = "Standard_D1"
 
 )
-
+#comment
 if (Get-Module -ListAvailable -Name AzureRM)
 {
     Import-Module -Name AzureRM
