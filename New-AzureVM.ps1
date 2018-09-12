@@ -15,7 +15,7 @@ param(
         "uksouth","ukwest","westcentralus","westeurope","westindia",
         "westus","westus2")]
     [String]
-    $Location = "westus",
+    $Location = "westus2",
 
     #Virtual machine credentials
     [Parameter(Mandatory=$true, Position=2)]
@@ -25,12 +25,14 @@ param(
 
     #Virtual machine size:
     #Some sizes are not available in all locations
+    #Additional information on sizes is available in the ReadMe.md
     [Parameter(Mandatory=$false, Position=3)]
     [String]
     $VMSize = "Standard_D1"
 
 )
-#comment
+
+#Module availability check
 if (Get-Module -ListAvailable -Name AzureRM)
 {
     Import-Module -Name AzureRM
@@ -50,10 +52,14 @@ else
     }
 }
 
+
+#Location Validity Check
 if ( (Get-AzureRMLocation | Where {$_.Location -eq $Location}).count -eq 0 )
 {
     throw "AzureRM location $Location not found. You can find a list of valid locations using Get-AzureRMLocation.";
 }
+
+#VM SKU Validatity Check
 if ( (Get-AzureRmVMSize -Location $Location | Where {$_.Name -match $VMSize}).count -eq 0 )
 {
     throw "Could not find a VMSize $VMSize at Location $Location. You can find VMSizes using the Get-AzureRmVMSize -Location <location> cmdlet."
@@ -82,10 +88,8 @@ $NIC = New-AzureRmNetworkInterface -ResourceGroupName $ResourceGroup -Location $
 
 #Create firewall rules and network security group
 Write-Verbose "Creating firewall rules and network security group";
-$RdpAccess = New-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol Tcp -Direction Inbound -Priority 1000 -SourceAddressPrefix * -SourcePortRange * `
--DestinationAddressPrefix * -DestinationPortRange 3389 -Access Allow
-$HttpsAccess = New-AzureRmNetworkSecurityRuleConfig -Name HTTPS -Protocol Tcp -Direction Inbound -Priority 1010 -SourceAddressPrefix * -SourcePortRange * `
--DestinationAddressPrefix * -DestinationPortRange 443 -Access Allow
+$RdpAccess = New-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol Tcp -Direction Inbound -Priority 1000 -SourceAddressPrefix * -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389 -Access Allow
+$HttpsAccess = New-AzureRmNetworkSecurityRuleConfig -Name HTTPS -Protocol Tcp -Direction Inbound -Priority 1010 -SourceAddressPrefix * -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 443 -Access Allow
 $NetworkSG = New-AzureRmNetworkSecurityGroup -ResourceGroupName $ResourceGroup -Location $Location -Name NetworkSecurityGroup -SecurityRules $RdpAccess,$HttpsAccess
 Set-AzureRmVirtualNetworkSubnetConfig -Name vSubnet -VirtualNetwork $VirtualNetwork -NetworkSecurityGroup $NetworkSG -AddressPrefix 192.168.1.0/24 | Out-Null
 Set-AzureRmVirtualNetwork -VirtualNetwork $VirtualNetwork | Out-Null
