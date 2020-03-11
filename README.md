@@ -1,6 +1,48 @@
 # PowerShell
 Repository for PowerShell scripts.
 
+# HarTools
+This script module contains the `ConvertFrom-Har` function which deserializes the JSON content of a HTTP Archive (.har) file to an object for parsing in PowerShell.
+
+HAR SPEC: "https://w3c.github.io/web-performance/specs/HAR/Overview.html"
+
+Module Import
+```powershell
+PS F:\Repo\PowerShell> Import-Module .\HarTools.psm1
+```
+Example 1: Loading HAR content.
+```powershell
+PS F:\Repo\PowerShell> $har = ConvertFrom-Har -FilePath c:\temp\www.bing.com.har
+```
+Example 2:  Loading HAR content.
+```powershell
+PS F:\Repo\PowerShell> $har = ConvertFrom-Har -FileBytes (Get-Content -Path c:\temp\www.bing.com.har -Encoding Byte -Raw)
+```
+Example 3: Parsing HAR object.
+```powershell
+PS F:\Repo\PowerShell>$bingRequestEntries = $har.Log.Entries | where {$_.Request.Url -match "www.bing.com"}
+PS F:\Repo\PowerShell>$bingRequestEntries[0]
+
+
+PageRef         : page_1
+StartedDateTime : 2/29/2020 9:48:29 AM
+Time            : 4.30999998934567
+Request         : Method:GET, Url:http://www.bing.com/, QueryString:, PostData:, HttpVersion:HTTP/1.1, Headers:Upgrade-Insecure-Requests:1 User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36 Edg/80.0.361.62
+                  Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9, HeadersSize:325, BodySize:0
+Response        : Status:307, StatusText:Internal Redirect, RedirectUrl:https://www.bing.com/, HttpVersion:HTTP/1.1, Headers:Location:https://www.bing.com/ Non-Authoritative-Reason:HSTS,
+                  HeadersSize:99, BodySize:-99
+Cache           : BeforeRequest:, AfterRequest:
+Timings         : Blocked:0.81699992056191, Dns:-1, Connect:-1, Send:0, Wait:1.40517950053543E-08, Receive:3.49300005473197, SSL:-1
+ServerIPAddress :
+Connection      :
+Comment         :
+
+
+
+PS F:\Repo\PowerShell>
+```
+
 # New-AzureVM.ps1
 Name doesn't matter as long as it's unique.
 
