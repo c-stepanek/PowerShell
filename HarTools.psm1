@@ -126,7 +126,17 @@ class Content : Entity {
         $strSize = "Size:$($this.Size)"
         $strCompression = "Compression:$($this.Compression)"
         $strMimeType = "MimeType:$($this.MimeType)"
-        $strText = "Text:ExpandForFullDetails"
+        $strText = "Text:"
+
+        if (![string]::IsNullOrEmpty($this.Text)) {
+            if ($this.Text.Length -ge 1000){
+                $strText += "ExpandForFullDetails"
+            }
+            else {
+                $strText += $this.Text
+            }
+        }
+
         $strEncoding = "Encoding:$($this.Encoding)"
 
         return "$strSize, $strCompression, $strMimeType, $strText, $strEncoding"
@@ -141,13 +151,13 @@ class Convert {
         return $javaScriptSerializer.Deserialize($json, [har])
     }
 
-    # This method reads the JSON content from file and deserializes to a HAR object.
+    # This method reads the JSON content from file and deserializes to a HAR object
     [Har] static DeserializeFromFile([string] $filePath) {
         $json = Get-Content -Path $filePath -Raw
         return [Convert]::Deserialize($json);
     }
 
-    # This method reads the content bytes and deserializes to a HAR object.
+    # This method reads the content bytes and deserializes to a HAR object
     [Har] static DeserializeFromBytes([byte[]] $fileBytes) {
         $json = [System.Text.Encoding]::UTF8.GetString($fileBytes)
         return [Convert]::Deserialize($json);
@@ -448,9 +458,10 @@ function ConvertFrom-Har {
     param (
         [Parameter(Mandatory = $true, Position = 1, ParameterSetName = "FilePath")]
         [ValidateScript( {
-                if (-not ($_ -match '^(?:[\w]\:|\\)(\\[a-z_\-\s0-9\.]+)+\.(har|HAR)$')) {
+                if (-not ($_ -imatch '^(?:|[\w]\:|\\|\.\.?)(\\[a-z_\-\s0-9\.]+)+\.(har)$')) {
                     throw "$_ either does not have a valid HAR file extension `n" + 
-                    "or you did not specify a full filepath. Example: C:\temp\domain.com.har or \\server\share\domain.com.har" 
+                    "or you did not specify a valid filepath. You must specify a local, UNC or relative file path. `n" +
+                    "Example: C:\temp\domain.com.har or \\server\share\domain.com.har or .\domain.com.har" 
                 }
                 elseif (-not (Test-Path $_ -PathType leaf)) {
                     throw "File not found: $_"
@@ -469,8 +480,11 @@ function ConvertFrom-Har {
     )
 
     begin {
-        Add-Type -AssemblyName 'System.Web.Extensions'
-    
+        if ($FilePath.StartsWith(".\")) {
+            $FilePath = (Resolve-Path $FilePath).Path
+        }
+
+        Add-Type -AssemblyName 'System.Web.Extensions' 
     }
     process {
 
@@ -518,7 +532,7 @@ function ConvertFrom-Har {
 
     end { }
 
-<#
+    <#
 .SYNOPSIS
 
 Coverts the content of a HTTP Archive (.har) file to an object.
