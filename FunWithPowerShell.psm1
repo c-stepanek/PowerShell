@@ -28,6 +28,7 @@ function New-PowerShellSignatureGenerator {
 
     # The value after the comma (,) is the maximum number of substrings returned by the split operation.
     # This will be total length of the hex string divided by 2.
+    # The foreach (%) takes the hex string and casts it to [int] then casts the [int] to [char]
 
     Write-Output "-join('$hexString' -split'(?<=\G.{2})',$($hexString.Length/2)|%{[char][int]`"0x`$_`"})"
 }
