@@ -1,6 +1,29 @@
 # PowerShell
 Repository for PowerShell scripts.
 
+# FunWithPowerShell
+This script module contains the `New-PowerShellSignatureGenerator` function which displays a 1 liner containing an encoded message.
+
+Module Import
+```powershell
+PS F:\Repo\PowerShell> Import-Module .\FunWithPowerShell.psm1
+```
+Example:
+```powershell
+PS F:\Repo\PowerShell> New-PowerShellSignatureGenerator -Message "Veni, vidi, vici."
+```
+Output:
+```text
+-join('56656E692C20766964692C20766963692E' -split'(?<=\G.{2})',17|%{[char][int]"0x$_"})
+```
+
+Now anyone can run your 1 liner in PowerShell to see the encoded message.
+```powershell
+PS F:\Repo\PowerShell> -join('56656E692C20766964692C20766963692E' -split'(?<=\G.{2})',17|%{[char][int]"0x$_"})
+Veni, vidi, vici.
+PS F:\Repo\PowerShell>
+```
+
 # HarTools
 This script module contains the `ConvertFrom-Har` function which deserializes the JSON content of a HTTP Archive (.har) file to an object for parsing in PowerShell.
 
@@ -42,6 +65,7 @@ Comment         :
 
 PS F:\Repo\PowerShell>
 ```
+<br>
 
 # New-AzureVM.ps1
 Name doesn't matter as long as it's unique.
@@ -56,12 +80,14 @@ VMSize can be determined with `Get-AzureRMVMSize -Location <location>`
   
   For more pricing details: https://azure.microsoft.com/en-us/pricing/details/virtual-machines/windows/
 
+<br>
 
 # New-NetworkCapture.ps1
 Runs a network capture for 5 minutes by default.
 
 This a PowerShell variant of running `netsh trace start capture=yes tracefile=%temp%\NetworkTrace.etl` in the command prompt.
 
+<br>
 
 # TcpPing.ps1
 The script will take an IP address (IPv4 or IPv6) or DNS hostname, then will 
